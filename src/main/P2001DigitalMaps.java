@@ -24,8 +24,6 @@ public class P2001DigitalMaps {
     private DigitalMap _mapFoEs01;
     private DigitalMap _mapFoEs0_1;
     private DigitalMap _mapTropoClim;
-    private DigitalMap _mapDN50;
-    private DigitalMap _mapN050;
 
 
     public P2001DigitalMaps() {
@@ -43,8 +41,6 @@ public class P2001DigitalMaps {
         _mapFoEs10 = new DigitalMap("FoEs10.txt", true);
         _mapFoEs01 = new DigitalMap("FoEs01.txt", true);
         _mapFoEs0_1 = new DigitalMap("FoEs0.1.txt", true);
-        _mapDN50 = new DigitalMap("DN50.TXT", true);
-        _mapN050 = new DigitalMap("N050.TXT", true);
         _mapTropoClim = new DigitalMap("TropoClim.txt", false);
 
     }
@@ -84,10 +80,6 @@ public class P2001DigitalMaps {
     public double GetH0(double lon, double lat) {
         return _mapData_h0.GetInterpolatedValue(lon, lat);
     }
-
-    public double GetDN50(double lon, double lat) { return _mapDN50.GetInterpolatedValue(lon, lat);  }
-
-    public double GetN050(double lon, double lat) { return _mapN050.GetInterpolatedValue(lon, lat);  }
 
     public double GetFoEs(double lon, double lat, double p) {
         double foEs;
