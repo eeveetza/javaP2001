@@ -45,11 +45,11 @@ public class P2001 {
 
     public double tl_p2001(P2001DigitalMaps maps, double[] d, double[] h, int[] z, double GHz, double Tpc, double Phire, double Phirn, double Phite,
                            double Phitn, double Hrg, double Htg, double Grx, double Gtx, int FlagVP) {
-        //  tl_p2001 WRPM in the frequency range 30 MHz to 50 GHz ITU-R P.2001-5
+        //  tl_p2001 WRPM in the frequency range 30 MHz to 50 GHz ITU-R P.2001-3
         //   This function computes path loss due to both signal enhancements and fading
         //   over the range from 0% to 100% of an average year according to the
         //   general purpose wide-range model as described in Recommendation ITU-R
-        //   P.2001-5. The model covers the frequency range from 30 MHz to 50 GHz
+        //   P.2001-3. The model covers the frequency range from 30 MHz to 50 GHz
         //   and it is most accurate for distances from 3 km to at least 1000 km.
         //   There is no specific lower limit, although the path length
         //   must be greater than zero. A prediction of basic transmission loss less
@@ -92,7 +92,6 @@ public class P2001 {
         //     v4    19JUL17     Ivica Stevanovic, OFCOM         Introduced digital maps
         //     v5    29OCT19     Ivica Stevanovic, OFCOM         Changes in angular distance dependent loss according to ITU-R P.2001-3
         //     v6    13JUL21     Ivica Stevanovic, OFCOM         Changes in free-space loss according to ITU-R P.2001-4
-        //     v7    18JUL23     Ivica Stevanovic, OFCOM         Introduced harmonized troposcatter model according to ITU-R P.2001-5
         ////
 
 
@@ -382,14 +381,13 @@ public class P2001 {
         //// Sub-model 3. Troposcatter propagation
 
         // Use the method given in Attachment E to calculate the troposcatter basic
-        // transmission loss Lbs
+        // transmission loss Lbs as given by equation (E.17)
 
-        double Hs = surface_altitude_cv(h, d, Dtcv)/1000.0;
-
-        double[] tlt = tl_troposcatter(maps, GHz, dt, Hts, Hrs, Reff50, Thetae, Thetat, Thetar, Phicvn, Phicve, Gtx, Grx,  Tpcp, Hs);
+        double[] tlt = tl_troposcatter(maps, GHz, dt, Thetat, Thetar, Thetae, Phicvn, Phicve, Phitn, Phite, Phirn, Phire, Gtx, Grx, Reff50, Tpcp);
 
         double Lbs = tlt[0];
         double Thetas = tlt[1];
+        int Ztropo = (int) tlt[2];
 
         // To avoid under-estimating troposcatter for short paths, limit Lbs (E.17)
 
@@ -658,7 +656,7 @@ public class P2001 {
         out[123]    =	Wvsurmid;
         out[124]    =	Wvsurrx;
         out[125]    =	Wvsurtx;
-
+        out[126]    =	Ztropo;
 
         return out; */
     }
@@ -3127,7 +3125,7 @@ public class P2001 {
         //     v0    13JUL16     Ivica Stevanovic, OFCOM         Initial version
         //     v1    18JUL17     Ivica Stevanovic, OFCOM         Initial Java version
 
-        return 92.4 + 20 * Math.log10(f) + 20 * Math.log10(d);
+        return 92.44 + 20 * Math.log10(f) + 20 * Math.log10(d);
 
     }
 
@@ -3549,100 +3547,7 @@ public class P2001 {
         return out;
     }
 
-    public double[] tl_troposcatter(P2001DigitalMaps maps, double f, double dt, double hts, double hrs, double ae, double thetae, double thetat, double thetar,  double phicvn, double phicve, double Gt, double Gr, double p, double hs) {
-        //tl_troposcatter Troposcatter basic transmission loss
-        //   This function computes the troposcatter basic transmission loss
-        //   as defined in Attachment E
-        //
-        //     Input parameters:
-        //     maps    -   Object containing Digital Maps
-        //     f       -   Frequency GHz
-        //     dt      -   Total distance (km)
-        //     hts,hrs -   Altitudes of transmitting antenna and receiving antennas in m
-        //     ae      -   Effective Earth radius (km)
-        //     thetae  -   Angle subtended by d km at centre of spherical Earth (rad)
-        //     thetat  -   Tx horizon elevation angle relative to the local horizontal (mrad)
-        //     thetar  -   Rx horizon elevation angle relative to the local horizontal (mrad)
-        //     phicvn  -   Troposcatter common volume latitude (deg)
-        //     phicve  -   Troposcatter common volume longitude (deg)
-        //     Gt, Gr  -   Gain of transmitting and receiving antenna in the azimuthal direction
-        //                 of the path towards the other antenna and at the elevation angle
-        //                 above the local horizontal of the other antenna in the case of a LoS
-        //                 path, otherwise of the antenna's radio horizon, for median effective
-        //                 Earth radius.
-
-        //     p       -   Percentage of average year for which predicted basic loss
-        //                 is not exceeded (%)
-        //     hs      -   Height of the Earth's surface above sea level (km)
-        //
-        //     Output parameters:
-        //     Lbs    -   Troposcatter basic transmission loss (dB)
-        //     theta  -   Scatter angle (mrad)
-        //
-        //
-        //     Example:
-        //     [Lbs, theta] = tl_troposcatter_pdr(f, dt, hts, hrs, ae, the, thetat, thetar, phicvn, phicve,  Gt, Gr, p, hs)
-
-        //
-        //     Rev   Date        Author                          Description
-        //     -------------------------------------------------------------------------------
-        //     v0    18JUL23     Ivica Stevanovic, OFCOM         Initial version
-
-
-        // Attachment E: Troposcatter
-
-        double fMHz = f*1000;
-
-        // E.2 Climatic classification
-
-        // Find average annual sea-level surface refractivity N0 and radio-refractivity lapse rate dN
-        // for the common volume of the link in question using the digital maps at phicve (lon),
-        // phicvn (lat) - as a bilinear interpolation
-        double dN = maps.GetDN50(phicve, phicvn);
-        double N0 = maps.GetN050(phicve, phicvn);
-
-
-        // E.3 Calculation of tropocscatter basic transmission loss
-        // Step2: Calculate the scatter angle theta
-
-        double theta = 1000*thetae + thetat + thetar;     // mrad    (E.1)
-
-
-        // Step 3: Estimate the aperture-to-median coupling loss Lc (11)
-
-        double Lc = 0.07 * Math.exp(0.055* (Gt + Gr));    // dB    (E.3)
-
-
-        // Step 4: Estimate the average annual transmission loss associated with
-        // troposcatter not exceeded for p% of time (E.4)-(E.8):
-
-        double hb = 7.35;  //km  scale height set to the global mean
-
-        double beta = dt/(2.0*ae) + thetar/1000.0 + (hrs-hts)/(1000.0*dt);  //(E.7)
-
-        double h0 = hts/1000.0 + dt*Math.sin(beta)/(Math.sin(theta/1000.0)) *(0.5* dt * Math.sin(beta)/(ae*Math.sin(theta/1000.0))+Math.sin(thetat/1000.0));   //(E.6)
-
-        double Yp = 0.035*N0*Math.exp(-h0/hb)*Math.pow( (-Math.log10(p/50.0)), (0.67));
-
-        if (p >= 50) {
-
-            Yp = -0.035 * N0 * Math.exp(-h0 / hb) * Math.pow( (-Math.log10((100.0 - p) / 50.0)),  (0.67));
-
-        }
-
-        double F = 0.18*N0*Math.exp(-hs/hb) - 0.23*dN;   //(E.4)
-
-        double Lbs = F + 22.0*Math.log10(fMHz) + 35.0*Math.log10(theta) + 17.0*Math.log10(dt) + Lc - Yp;    // (E.4)
-
-
-        double[] out = new double[2];
-        out[0] = Lbs;
-        out[1] = theta;
-
-        return out;
-    }
-
-    public double[] tl_troposcatter_old(P2001DigitalMaps maps, double f, double dt, double thetat, double thetar, double thetae, double phicvn, double phicve, double phitn, double phite, double phirn, double phire, double Gt, double Gr, double ae, double p) {
+    public double[] tl_troposcatter(P2001DigitalMaps maps, double f, double dt, double thetat, double thetar, double thetae, double phicvn, double phicve, double phitn, double phite, double phirn, double phire, double Gt, double Gr, double ae, double p) {
         //tl_troposcatter Troposcatter basic transmission loss
         //   This function computes the troposcatter basic transmission loss
         //   as defined in ITU-R P.2001-3 (Attachment E)
@@ -4355,68 +4260,4 @@ public class P2001 {
         return out;
     }
 
-
-    double surface_altitude_cv(double[] h, double[] d, double d_tcv) {
-        // surface_altitude_cv altitude on the surface of the Earth below common volume
-        //     hs = surface_altitude_cv(h, d, d_tcv)
-        //     This function computes the altitude of the point at the surface of
-        //     the Earth below common volume
-        //
-        //     Input arguments:
-        //           d       -   vector of distances in the path profile (km)
-        //           h       -   vector of heights (masl)
-        //           d_ctv   -   horizontal path length from transmitter to common volume computed using (3.9.1a)
-        //
-        //     Output arguments:
-        //           hs      -   altitude on the surface of the Earth below common volume (masl)
-        //
-        //     Example:
-        //          hs = surface_altitude_cv(h, d, d_tcv)
-        //
-        //     Rev   Date        Author                          Description
-        //     -------------------------------------------------------------------------------
-        //     v0    18JUL23     Ivica Stevanovic, OFCOM         First implementation in java
-
-
-        int n = d.length;
-
-        int ii = 0;
-        double dmin = Math.abs(d[0] - d_tcv);
-
-        for (int i = 1; i < n - 1; i++) {
-            double dmin_trial = Math.abs(d[i] - d_tcv);
-            if (dmin_trial < dmin) {
-                dmin = dmin_trial;
-                ii = i;
-            }
-        }
-
-        int i1 = 0;
-        int i2 = 0;
-        double hs = 0;
-
-        if (d[ii] == d_tcv) {
-            i1 = ii;
-            hs = h[i1];
-            return hs;
-        }
-
-        if (d[ii] < d_tcv) {
-            i1 = ii;
-            i2 = ii + 1;
-        } else {
-            i2 = ii;
-            i1 = ii - 1;
-        }
-
-        // apply linear interpolation
-
-        hs = h[i1] + (h[i2] - h[i1]) * (d_tcv - d[i1]) / (d[i2] - d[i1]);
-
-        return hs;
-
-    }
-
-
 }
-
