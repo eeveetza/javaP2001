@@ -3124,8 +3124,9 @@ public class P2001 {
         //     -------------------------------------------------------------------------------
         //     v0    13JUL16     Ivica Stevanovic, OFCOM         Initial version
         //     v1    18JUL17     Ivica Stevanovic, OFCOM         Initial Java version
+        //     v2    25AUG23     Ivica Stevanovic, OFCOM         Aligned to P.2001-4 (coefficient 92.4)
 
-        return 92.44 + 20 * Math.log10(f) + 20 * Math.log10(d);
+        return 92.4 + 20 * Math.log10(f) + 20 * Math.log10(d);
 
     }
 
