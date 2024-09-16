@@ -14,6 +14,28 @@ The following table describes the structure of the folder `./src/` containing th
 |`maps/`          | Subfolder containing data maps provided with Recommendation ITU-R P.2001   |
 
 
+## Integrating ITU Digital Products
+
+This software uses ITU digital products that are integral part of Recommendations. These products must not be reproduced or distributed without explicit written permission from the ITU.
+
+**Download and extract the required maps** to `./src/maps`:
+
+   - From [ITU-R P.2001-4](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2001-4-202109-S!!ZIP-E.zip):
+     - `DN_Median.txt`
+     - `DN_SubSlope.txt`
+     - `DN_SupSlope.txt`	
+     - `dndz_01.txt`
+     - `Esarain_Mt_v5.txt`
+     - `Esarain_Pr6_v5.txt`
+     - `Esarain_Beta_v5.txt`	
+     - `FoEs0.1.txt`	
+     - `FoEs01.txt`
+     - `FoEs10.txt`
+     - `FoEs50.txt`
+     - `h0.txt`
+     - `surfwv_50_fixed.txt`
+     - `TropoClim.txt`
+
 ### Function Call
 
 ~~~

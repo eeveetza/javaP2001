@@ -24,3 +24,11 @@ hs_err_pid*
 replay_pid*
 
 .DS_Store
+*.xml
+/out/
+.idea/workspace.xml
+
+
+# Ignore all the files in the folder maps
+/src/maps/*.*
+!/src/maps/.gitkeep
