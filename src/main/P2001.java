@@ -6,10 +6,10 @@ package main;
 
 public class P2001 {
     //
-    // Class implementation of Recommendation ITU-R P.2001-4
+    // Class implementation of Recommendation ITU-R P.2001-6
     //
     //
-    //  Copyright (c) 2016-2019, Ivica Stevanovic
+    //  Copyright (c) 2016- , Ivica Stevanovic
     //  All rights reserved.
     //
     // Redistribution and use in source and binary forms, with or without
@@ -92,6 +92,7 @@ public class P2001 {
         //     v4    19JUL17     Ivica Stevanovic, OFCOM         Introduced digital maps
         //     v5    29OCT19     Ivica Stevanovic, OFCOM         Changes in angular distance dependent loss according to ITU-R P.2001-3
         //     v6    13JUL21     Ivica Stevanovic, OFCOM         Changes in free-space loss according to ITU-R P.2001-4
+        //     v7    15NOV25     Ivica Stevanovic, OFCOM         Updated version number only (source identical to ITU-R P.2001-4)
         ////
 
 

@@ -1,17 +1,17 @@
 # Java Implementation of Recommendation ITU-R P.2001
 
-This code repository contains a Java software implementation of  [Recommendation ITU-R P.2001-4](https://www.itu.int/rec/R-REC-P.2001/en)  with a general purpose wide-range terrestrial propagation model in the frequency range 30 MHz to 50 GHz.  
+This code repository contains a Java software implementation of  [Recommendation ITU-R P.2001-6](https://www.itu.int/rec/R-REC-P.2001/en)  with a general purpose wide-range terrestrial propagation model in the frequency range 30 MHz to 50 GHz.  
 
 This version of the code is functionally identical to the reference version approved by ITU-R Working Party 3M and published by Study Group 3 on [ITU-R SG 3 Software, Data, and Validation Web Page](https://www.itu.int/en/ITU-R/study-groups/rsg3/Pages/iono-tropo-spheric.aspx). This version of the code is also implemented in [SEAMCAT](https://seamcat.org).
 
 
 The following table describes the structure of the folder `./src/` containing the Java implementation of Recommendation ITU-R P.2001.
 
-| File/Folder               | Description                                                         |
-|----------------------------|---------------------------------------------------------------------|
-|`main/P2001.java`                | Java class implementing Recommendation ITU-R P.2001-4        |
-|`test/2001Test.java`          | Java class implementing validation tests against the reference MATLAB/Octave implementation of this Recommendation for a range of input variables.          |
-|`maps/`          | Subfolder containing data maps provided with Recommendation ITU-R P.2001   |
+| File/Folder               | Description                                                                                                                                        |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+|`main/P2001.java`                | Java class implementing Recommendation ITU-R P.2001-6                                                                                              |
+|`test/2001Test.java`          | Java class implementing validation tests against the reference MATLAB/Octave implementation of this Recommendation for a range of input variables. |
+|`maps/`          | Subfolder containing data maps provided with Recommendation ITU-R P.2001                                                                           |
 
 
 ## Integrating ITU Digital Products
@@ -20,7 +20,7 @@ This software uses ITU digital products that are integral part of Recommendation
 
 **Download and extract the required maps** to `./src/maps`:
 
-   - From [ITU-R P.2001-4](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2001-4-202109-S!!ZIP-E.zip):
+   - From [ITU-R P.2001-6](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2001-6-202509-I!!ZIP-E.zip):
      - `DN_Median.txt`
      - `DN_SubSlope.txt`
      - `DN_SupSlope.txt`	
